@@ -1,0 +1,4 @@
+`ifndef __JVS_MEMORY_DEFINES_SV__
+ `define __JVS_MEMORY_DEFINES_SV__
+ `define JVS_MEM_NULL 65'h1_00000000_00000000
+`endif

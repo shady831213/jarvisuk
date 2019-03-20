@@ -1,0 +1,17 @@
+common_compile_option: &common_compile >-
+  -sverilog
+  -ntb_opts uvm-1.1
+  -timescale=1ns/10ps
+  
+
+builds:
+ jvs_memory:
+  test_discoverer:
+   type: "uvm_test"
+   attr:
+    test_dir: $JVSUK_HOME/testcases/jvs_memory
+  compile_option:
+   - *common_compile
+   - -f $JVSUK_HOME/etc/jvs.f $JVSUK_HOME/tb/jvs_memory_tb.sv -top jvs_memory_tb
+  sim_option:
+   - +UVM_VERBOSITY=UVM_HIGH
