@@ -33,6 +33,7 @@ jarvism run_test jvs_memory jvs_memory_showcase -seed 1
 + support pin interrupt
 + support msi irq
 + support soft irq
++ support shared irq vector
 + support irq vector redirection
 
 ## test
