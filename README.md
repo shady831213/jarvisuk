@@ -6,6 +6,11 @@ vcs
 
 [jarvism](https://github.com/shady831213/jarvism)
 
+# usage
+set $JVSUK_HOME to jarvisuk home dir.
+
+add $JVSUK_HOME/jvs.f to your filelist.
+
 # test
 ```
 source jarvism_cfg/jarvism_setup.sh
