@@ -15,3 +15,34 @@ builds:
    - $JVSUK_HOME/tb/jvs_memory_tb.sv -top jvs_memory_tb
   sim_option:
    - +UVM_VERBOSITY=UVM_HIGH
+
+ jvs_irq:
+  test_discoverer:
+   type: "uvm_test"
+   attr:
+    test_dir: $JVSUK_HOME/testcases/jvs_irq
+  compile_option:
+   - *common_compile
+   - $JVSUK_HOME/tb/jvs_irq_tb.sv -top jvs_irq_tb
+  sim_option:
+   - +UVM_VERBOSITY=UVM_HIGH
+
+groups:
+ jvs_memory:
+  build:
+   jvs_memory
+  tests:
+   - jvs_memory_showcase:
+
+ jvs_irq:
+  build:
+   jvs_irq
+  tests:
+   - jvs_int_simple_test:
+   - jvs_msi_irq_test:
+   - jvs_soft_irq_test:
+
+ jvs:
+  groups:
+   - jvs_memory
+   - jvs_irq

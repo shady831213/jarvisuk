@@ -2,4 +2,5 @@
  `define __JVS_DEFINES_SV__
 `include "jvs_common_defines.sv"
 `include "jvs_memory_defines.sv"
+`include "jvs_irq_defines.sv"
 `endif

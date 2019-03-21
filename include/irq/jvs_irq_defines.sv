@@ -1,0 +1,20 @@
+`ifndef __JVS_IRQ_DEFINES_SV__
+ `define __JVS_IRQ_DEFINES_SV__
+ `ifndef JVS_MAX_INT_PIN_NUM
+  `define JVS_MAX_INT_PIN_NUM 1024
+ `endif
+
+ `ifndef JVS_MAX_IRQ_VECTOR_WIDTH
+  `define JVS_MAX_IRQ_VECTOR_WIDTH 64
+ `endif
+
+`define JVS_INT_IRQ_FLAG 2'b00
+`define JVS_MSI_IRQ_FLAG 2'b01
+`define JVS_SOFT_IRQ_FLAG 2'b10
+`define JVS_UNDEFINED_IRQ_FLAG 2'b11
+
+`define JVS_INT_IRQ_V(x) (x & {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b1}} | {`JVS_INT_IRQ_FLAG, {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b0}}})
+`define JVS_MSI_IRQ_V(x) (x & {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b1}} | {`JVS_MSI_IRQ_FLAG, {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b0}}})
+`define JVS_SOFT_IRQ_V(x) (x & {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b1}} | {`JVS_SOFT_IRQ_FLAG, {(`JVS_MAX_IRQ_VECTOR_WIDTH-2){1'b0}}})
+
+`endif
