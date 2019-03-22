@@ -2,12 +2,15 @@
 +incdir+$JVSUK_HOME/src/memory
 +incdir+$JVSUK_HOME/src/irq
 +incdir+$JVSUK_HOME/src/register_region
++incdir+$JVSUK_HOME/src/clk_rst_group
 
 +incdir+$JVSUK_HOME/include/common
 +incdir+$JVSUK_HOME/include/memory
 +incdir+$JVSUK_HOME/include/irq
++incdir+$JVSUK_HOME/include/clk_rst_group
 
 +incdir+$JVSUK_HOME/interfaces/irq
++incdir+$JVSUK_HOME/interfaces/clk_rst_group
 
 +incdir+$JVSUK_HOME/pkg
 

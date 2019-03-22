@@ -38,6 +38,18 @@ builds:
   sim_option:
    - +UVM_VERBOSITY=UVM_HIGH
 
+ jvs_clk_rst_group:
+  test_discoverer:
+   type: "uvm_test"
+   attr:
+    test_dir: $JVSUK_HOME/testcases/jvs_clk_rst_group
+  compile_option:
+   - *common_compile
+   - $JVSUK_HOME/tb/jvs_clk_rst_group_tb.sv -top jvs_clk_rst_group_tb
+  sim_option:
+   - +UVM_VERBOSITY=UVM_HIGH
+
+
 
 groups:
  jvs_memory:
@@ -60,9 +72,15 @@ groups:
   tests:
    - jvs_register_region_test:
 
+ jvs_clk_rst_group:
+  build:
+   jvs_clk_rst_group
+  tests:
+   - jvs_clk_rst_group_basic_test:
 
  jvs:
   groups:
    - jvs_memory
    - jvs_irq
    - jvs_register_region
+   - jvs_clk_rst_group
