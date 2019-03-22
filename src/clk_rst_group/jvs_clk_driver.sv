@@ -92,7 +92,14 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
    endtask // drive_clk
 
    local task reset();
-      vif.reset_n = 0;
+      if (cfg.sync_rst) begin
+	 vif.ctrl_driver.reset_n <= 0;
+      end
+      else begin
+	 realtime delay = cfg.root_clk.get_period() * real'($urandom_range(1,255))/255;
+	 #(delay);
+	 vif.reset_n = 0;
+      end
       repeat(cfg.rst_cycle) begin
 	 @vif.ctrl_driver;
       end

@@ -84,6 +84,8 @@ class jvs_gen_clk_cfg extends jvs_clk_cfg_base implements jvs_clk_period_freq_if
    jvs_root_clk_cfg root_clk;
    jvs_clk_group_cfg parent;
    int 	   div_ratio;
+   bit     sync_rst;
+   
    `uvm_object_utils_begin(jvs_gen_clk_cfg)
      `uvm_field_object(root_clk, UVM_ALL_ON)
      `uvm_field_object(parent, UVM_ALL_ON)

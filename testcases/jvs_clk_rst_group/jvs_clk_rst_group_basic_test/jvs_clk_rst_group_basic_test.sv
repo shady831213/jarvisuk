@@ -12,6 +12,7 @@ class jvs_clk_basic_group_cfg extends jvs_clk_group_cfg;
 
       clk2div_cfg = jvs_gen_clk_cfg::type_id::create("clk2div");
       clk2div_cfg.div_ratio = 2;
+      clk2div_cfg.sync_rst = 1;
       this.add_gen_clk(clk2div_cfg);
 
       clk6div_cfg = jvs_gen_clk_cfg::type_id::create("clk6div");
