@@ -27,6 +27,18 @@ builds:
   sim_option:
    - +UVM_VERBOSITY=UVM_HIGH
 
+ jvs_register_region:
+  test_discoverer:
+   type: "uvm_test"
+   attr:
+    test_dir: $JVSUK_HOME/testcases/jvs_register_region
+  compile_option:
+   - *common_compile
+   - $JVSUK_HOME/tb/jvs_register_region_tb.sv -top jvs_register_region_tb
+  sim_option:
+   - +UVM_VERBOSITY=UVM_HIGH
+
+
 groups:
  jvs_memory:
   build:

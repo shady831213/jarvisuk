@@ -3,4 +3,5 @@
  `include "jvs_common_files.sv"
  `include "jvs_memory_files.sv"
  `include "jvs_irq_files.sv"
+ `include "jvs_register_region_files.sv"
 `endif

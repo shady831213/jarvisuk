@@ -1,6 +1,7 @@
 +incdir+$JVSUK_HOME/src/common
 +incdir+$JVSUK_HOME/src/memory
 +incdir+$JVSUK_HOME/src/irq
++incdir+$JVSUK_HOME/src/register_region
 
 +incdir+$JVSUK_HOME/include/common
 +incdir+$JVSUK_HOME/include/memory
