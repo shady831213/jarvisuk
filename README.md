@@ -55,7 +55,15 @@ jarvism run_test jvs_memory jvs_soft_irq_test
 
 
 # register region
-TBD
++ solve register name conflict
++ multiple sequencer and adapter share root_map
++ multiple reg_blocks with the same attribute into same reg region
++ thread-safe
+## test
+```
+source jarvism_cfg/jarvism_setup.sh
+jarvism run_test jvs_register_region jvs_register_region_test -seed 1
+```
 
 # clock group
 TBD
