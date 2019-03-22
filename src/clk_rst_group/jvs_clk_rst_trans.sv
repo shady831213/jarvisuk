@@ -78,11 +78,15 @@ class jvs_root_clk_cfg extends jvs_clk_cfg_base implements jvs_clk_period_freq_i
    endfunction
 endclass // jvs_root_clk_cfg
 
+typedef class jvs_clk_group_cfg;
+   
 class jvs_gen_clk_cfg extends jvs_clk_cfg_base implements jvs_clk_period_freq_if;
    jvs_root_clk_cfg root_clk;
+   jvs_clk_group_cfg parent;
    int 	   div_ratio;
    `uvm_object_utils_begin(jvs_gen_clk_cfg)
      `uvm_field_object(root_clk, UVM_ALL_ON)
+     `uvm_field_object(parent, UVM_ALL_ON)
      `uvm_field_int(div_ratio, UVM_ALL_ON)
    `uvm_object_utils_end
 
@@ -149,6 +153,7 @@ class jvs_clk_group_cfg extends jvs_clk_cfg_base;
 
    function void add_gen_clk(jvs_gen_clk_cfg clk);
       clk.root_clk = this.root_clk;
+      clk.parent = this;
       gen_clks.push_back(clk);
    endfunction
 endclass // jvs_clk_group_cfg
@@ -248,11 +253,13 @@ class jvs_clk_rst_trans extends uvm_sequence_item;
    uvm_event_pool rst_event_pool;
    uvm_event_pool begin_event_pool;
    uvm_event_pool end_event_pool;
-
+   string pattern;
+   
    `uvm_object_utils_begin(jvs_clk_rst_trans)
      `uvm_field_object(rst_event_pool, UVM_ALL_ON)
      `uvm_field_object(begin_event_pool, UVM_ALL_ON)
      `uvm_field_object(end_event_pool, UVM_ALL_ON)
+     `uvm_field_string(pattern, UVM_ALL_ON)
    `uvm_object_utils_end
    
    function new(string name = "jvs_clk_rst_trans");

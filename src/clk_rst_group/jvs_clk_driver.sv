@@ -57,12 +57,10 @@ endclass // jvs_root_clk_driver
 `uvm_analysis_imp_decl(_clk_rst_driver)
 
 class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
-   jvs_gen_clk_trans trans;
    uvm_analysis_imp_clk_rst_driver#(jvs_clk_rst_trans, jvs_gen_clk_driver) rst_ana_imp;
    uvm_tlm_fifo#(jvs_clk_rst_trans) rst_fifo;
    virtual 	  jvs_gen_clk_if vif;
    `uvm_component_utils_begin(jvs_gen_clk_driver)
-     `uvm_field_object(trans, UVM_ALL_ON)
    `uvm_component_utils_end
 
    function new(string name = "jvs_gen_clk_driver", uvm_component parent);
@@ -76,8 +74,6 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
       if(!uvm_config_db#(virtual jvs_gen_clk_if)::get(this, "", "jvs_gen_clk_if", vif)) begin
 	 `uvm_fatal(get_full_name(), "Can't get gen clk rst interface!");
       end
-      trans = jvs_gen_clk_trans::type_id::create("jvs_gen_clk");
-      trans.cfg = cfg;
    endfunction // build_phase
 
    local task drive_clk();
@@ -97,7 +93,7 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
 
    local task reset();
       vif.reset_n = 0;
-      repeat(trans.cfg.rst_cycle) begin
+      repeat(cfg.rst_cycle) begin
 	 @vif.ctrl_driver;
       end
       vif.ctrl_driver.reset_n <= 1;
@@ -157,8 +153,14 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
    endtask // run_phase
 
    virtual function void write_clk_rst_driver (jvs_clk_rst_trans tr);
-      if (!rst_fifo.try_put(tr)) begin
-	 `uvm_fatal(this.get_name(), "hw reset occurs while previous hw reset in processing!");
+      if (uvm_is_match(tr.pattern, {cfg.parent.get_name(), ".", cfg.get_name()})) begin
+	 if (!rst_fifo.try_put(tr)) begin
+	    `uvm_fatal(this.get_name(), "hw reset occurs while previous hw reset in processing!");
+	 end
+      end
+      else begin
+	 uvm_event end_e =  tr.end_event_pool.get(this.get_name());
+	 end_e.trigger();
       end
    endfunction
 endclass  

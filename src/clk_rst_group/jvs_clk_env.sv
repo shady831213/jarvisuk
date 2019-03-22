@@ -1,9 +1,9 @@
 `ifndef __JVS_CLK_ENV_SV__
  `define __JVS_CLK_ENV_SV__
 class jvs_clk_env extends uvm_env;
-   jvs_clk_top_vir_seqr seqr;
-   jvs_clk_group_agent groups[string];
-   jvs_clk_top_cfg cfg;
+   local jvs_clk_top_vir_seqr seqr;
+   local jvs_clk_group_agent groups[string];
+   local jvs_clk_top_cfg cfg;
 
    `uvm_component_utils(jvs_clk_env)
    function new(string name = "jvs_clk_env", uvm_component parent = null);
@@ -32,6 +32,8 @@ class jvs_clk_env extends uvm_env;
       end
    endfunction
    
-
+   task hw_reset(string pattern="*");
+      seqr.hw_reset(pattern);
+   endtask
 endclass
 `endif

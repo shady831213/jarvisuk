@@ -73,14 +73,16 @@ class jvs_clk_rst_group_basic_test extends uvm_test;
    virtual task reset_phase(uvm_phase phase);
       phase.raise_objection(this);
       super.reset_phase(phase);
-      env.seqr.hw_global_reset();
+      env.hw_reset();
       phase.drop_objection(this);
    endtask
    
    virtual task main_phase(uvm_phase phase);
       phase.raise_objection(this);
       #10000ns;
-      env.seqr.hw_global_reset();
+      env.hw_reset("group.*");
+      #10000ns;      
+      env.hw_reset("*.clk2div");
       #10000ns;      
       phase.drop_objection(this);
    endtask

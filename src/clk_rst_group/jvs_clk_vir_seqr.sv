@@ -30,12 +30,14 @@ class jvs_clk_top_vir_seqr extends jvs_clk_vir_seqr;
       super.new(name, parent);
    endfunction // new
 
-   virtual task hw_global_reset();
+   virtual task hw_reset(string pattern = "*");
       jvs_clk_rst_trans tr = new();
+      tr.pattern = pattern;
       rst_ana_export.write(tr);
       tr.wait_end();
-      `uvm_info(this.get_name(), $psprintf("@%0t hw_global_reset done!", $realtime), UVM_LOW);
+      `uvm_info(this.get_name(), $psprintf("@%0t hw_reset  %0s done!", $realtime, pattern), UVM_LOW);
    endtask // hw_global_reset
 
+   
 endclass
 `endif
