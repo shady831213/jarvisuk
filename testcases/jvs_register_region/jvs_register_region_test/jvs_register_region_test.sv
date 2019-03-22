@@ -99,7 +99,7 @@ class jvs_register_region_test extends jvs_reg_base_test;
       phase.raise_objection(this);
       super.run_phase(phase);
       fork
-	 access_reg("top_region", "test_reg", 32'h5a);
+	 access_reg("top_region", "top_reg", 32'h5a);
 	 access_reg("sub_block", "test_reg", 32'ha5);
 	 access_reg("top_block", "test_reg", 32'h5500);	 
       join

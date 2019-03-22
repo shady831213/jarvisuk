@@ -75,7 +75,7 @@ class jvs_test_top_block extends uvm_reg_block;
       this.sub_top_block.build();
       this.default_map.add_submap(this.sub_top_block.default_map, 3 << 24);
    
-      this.test_reg = jvs_test_reg::type_id::create("test_reg",, get_full_name());
+      this.test_reg = jvs_test_reg::type_id::create("top_reg",, get_full_name());
       this.test_reg.configure(this, null, "");
       this.test_reg.build();
       this.default_map.add_reg(this.test_reg, 4 << 24, "RW", 0);

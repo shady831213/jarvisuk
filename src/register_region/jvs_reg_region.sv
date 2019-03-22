@@ -163,17 +163,17 @@ class jvs_reg_region extends jvs_reg_tree_node#(jvs_reg_region);
       jvs_reg_block_wrapper reg_blocks[$];
       jvs_reg_block_wrapper _reg_block;
       uvm_reg _register;
-      reg_block_table.get_nodes(reg_blocks);
-      foreach(reg_blocks[i]) begin
-	 if(reg_blocks[i].get_reg(name, _reg_block, _register)) begin
+      sub_region_table.get_nodes(sub_regions);
+      foreach(sub_regions[i]) begin
+	 if (sub_regions[i].get_reg(name, _reg_block, _register)) begin
 	    reg_block = _reg_block;
 	    register = _register;
 	    return 1;
 	 end
       end
-      sub_region_table.get_nodes(sub_regions);
-      foreach(sub_regions[i]) begin
-	 if (sub_regions[i].get_reg(name, _reg_block, _register)) begin
+      reg_block_table.get_nodes(reg_blocks);
+      foreach(reg_blocks[i]) begin
+	 if(reg_blocks[i].get_reg(name, _reg_block, _register)) begin
 	    reg_block = _reg_block;
 	    register = _register;
 	    return 1;
