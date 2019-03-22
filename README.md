@@ -65,5 +65,14 @@ source jarvism_cfg/jarvism_setup.sh
 jarvism run_test jvs_register_region jvs_register_region_test -seed 1
 ```
 
-# clock group
-TBD
+# clock reset group
++ support same source but diffrent frequency clocks
++ support differnt source async clocks
++ support global or partially reset
++ support sync and async reset
+## test
+```
+source jarvism_cfg/jarvism_setup.sh
+jarvism run_test jvs_clk_rst_group jvs_clk_rst_group_basic_test -seed 1 -wave
+```
+
