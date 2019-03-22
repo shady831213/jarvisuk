@@ -54,7 +54,15 @@ groups:
    - jvs_msi_irq_test:
    - jvs_soft_irq_test:
 
+ jvs_register_region:
+  build:
+   jvs_register_region
+  tests:
+   - jvs_register_region_test:
+
+
  jvs:
   groups:
    - jvs_memory
    - jvs_irq
+   - jvs_register_region
