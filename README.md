@@ -66,6 +66,7 @@ jarvism run_test jvs_register_region jvs_register_region_test -seed 1
 ```
 
 # clock reset group
++ 
 + support same source but diffrent frequency clocks
 + support differnt source async clocks
 + support global or partially reset
