@@ -188,9 +188,6 @@ class jvs_memory_allocator extends jvs_memory_cfg;
 		  free_block.configurate(lower_block.get_s_addr(), acc_block.get_size());		  
 	       end
 	    end
-	    else begin
-	       free_block.configurate(lower_block.get_s_addr(), acc_block.get_size());		  
-	    end
 
 	    if (upper_block) begin
 	       jvs_memory_free_block upper_free_block;
