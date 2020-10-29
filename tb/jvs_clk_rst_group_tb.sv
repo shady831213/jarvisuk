@@ -6,12 +6,11 @@ import jvs_pkg::*;
 
 
 module jvs_clk_rst_group_tb();
-   jvs_clk_group_if clk_group_if();
-   jvs_clk_group_if clk_group1_if();
+   jvs_clk_group_if#(.name("group")) clk_group_if();
+   jvs_clk_group_if#(.name("group1")) clk_group1_if();
 
    initial begin
-      uvm_config_db#(virtual jvs_clk_group_if)::set(uvm_root::get(), "*.group", "jvs_clk_group_if", clk_group_if);
-      uvm_config_db#(virtual jvs_clk_group_if)::set(uvm_root::get(), "*.group1", "jvs_clk_group_if", clk_group1_if);
+      #0;
       run_test();
    end
    `JVS_WAVE(jvs_clk_rst_group_tb)   

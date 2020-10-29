@@ -20,19 +20,23 @@ interface jvs_gen_clk_if();
    endclocking
 endinterface // jvs_gen_clk_if
 
-interface jvs_clk_group_if();
+module jvs_clk_group_if#(parameter string name="", parameter string path="*")();
+   import uvm_pkg::*;
    jvs_root_clk_if root_clk_if();
    jvs_gen_clk_if gen_clk_ifs[`JVS_MAX_CLK_GROUP_CLK_NUM-1:0]();
-   virtual   jvs_gen_clk_if gen_clk_vifs[`JVS_MAX_CLK_GROUP_CLK_NUM-1:0];
 
    genvar    i;
    generate
-      for (i = 0; i < `JVS_MAX_CLK_GROUP_CLK_NUM; i++) begin
-	 assign gen_clk_ifs[i].root_clock = root_clk_if.clock;
-	 initial begin
-	    gen_clk_vifs[i] = gen_clk_ifs[i];
-	 end
+      for (i = 0; i < `JVS_MAX_CLK_GROUP_CLK_NUM; i++) begin: gen_clk_loop
+         assign gen_clk_ifs[i].root_clock = root_clk_if.clock;
+         initial begin
+            uvm_config_db#(virtual jvs_gen_clk_if)::set(uvm_root::get(), $sformatf("%s.%s",path, name), $sformatf("jvs_gen_clk_if[%0d]", i), gen_clk_ifs[i]);
+         end
       end
    endgenerate
-endinterface
+   initial begin
+      uvm_config_db#(virtual jvs_root_clk_if)::set(uvm_root::get(), $sformatf("%s.%s",path, name), "jvs_root_clk_if", root_clk_if);
+   end
+
+endmodule
 `endif

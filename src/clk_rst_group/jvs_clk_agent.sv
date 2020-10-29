@@ -53,7 +53,6 @@ class jvs_clk_group_agent extends uvm_agent;
    jvs_clk_group_vir_seqr seqr;
    jvs_gen_clk_agent gen_clks[string];
    jvs_clk_group_cfg cfg;
-   virtual jvs_clk_group_if vif;
    `uvm_component_utils_begin(jvs_clk_group_agent)
    `uvm_component_utils_end
 
@@ -62,34 +61,39 @@ class jvs_clk_group_agent extends uvm_agent;
    endfunction
 
    virtual function void build_phase(uvm_phase phase);
+      virtual jvs_root_clk_if root_vif;
       super.build_phase(phase);
-      if(!uvm_config_db#(virtual jvs_clk_group_if)::get(this, "", "jvs_clk_group_if", vif)) begin
-	 `uvm_fatal(get_full_name(), "Can't get clk rst group interface!");
+      if(!uvm_config_db#(virtual jvs_root_clk_if)::get(this, "", "jvs_root_clk_if", root_vif)) begin
+	     `uvm_fatal(get_full_name(), "Can't get root clk rst interface!");
       end
-      uvm_config_db#(virtual jvs_root_clk_if)::set(this, "jvs_root_clk.*", "jvs_root_clk_if", vif.root_clk_if);
+      uvm_config_db#(virtual jvs_root_clk_if)::set(this, "jvs_root_clk.*", "jvs_root_clk_if", root_vif);
 
       if(!uvm_config_db#(jvs_clk_group_cfg)::get(this, "", "cfg", cfg)) begin
-	 `uvm_fatal(get_full_name(), "Can't get cfg!");
+	     `uvm_fatal(get_full_name(), "Can't get cfg!");
       end
       uvm_config_db#(jvs_root_clk_cfg)::set(this, "jvs_root_clk.*", "cfg", cfg.root_clk);
-      root_clk = jvs_root_clk_agent::type_id::create("jvs_root_clk", this);
-   
+      root_clk = jvs_root_clk_agent::type_id::create("jvs_root_clk", this);  
+      
       seqr = jvs_clk_group_vir_seqr::type_id::create("jvs_clk_group_vir_seqr", this);
-
+   
       foreach(cfg.gen_clks[i]) begin
-	 string key = cfg.gen_clks[i].get_name();
-	 uvm_config_db#(virtual jvs_gen_clk_if)::set(this, {key, ".*"}, "jvs_gen_clk_if", vif.gen_clk_vifs[i]);
-	 uvm_config_db#(jvs_gen_clk_cfg)::set(this, {key, ".*"}, "cfg", cfg.gen_clks[i]);
-	 gen_clks[key] = jvs_gen_clk_agent::type_id::create(key, this);
+	     string key = cfg.gen_clks[i].get_name();
+         virtual jvs_gen_clk_if gen_vif;
+         if(!uvm_config_db#(virtual jvs_gen_clk_if)::get(this, "", $sformatf("jvs_gen_clk_if[%0d]", i), gen_vif)) begin
+	        `uvm_fatal(get_full_name(), $sformatf("Can't get gen clk rst interface for %s!", key));
+         end
+	     uvm_config_db#(virtual jvs_gen_clk_if)::set(this, {key, ".*"}, "jvs_gen_clk_if",gen_vif);
+	     uvm_config_db#(jvs_gen_clk_cfg)::set(this, {key, ".*"}, "cfg", cfg.gen_clks[i]);
+	     gen_clks[key] = jvs_gen_clk_agent::type_id::create(key, this);
       end
    
    endfunction // build_phase   
 
-   virtual function void connect_phase(uvm_phase phase);
+   virtual    function void connect_phase(uvm_phase phase);
       super.connect_phase(phase);
       foreach(gen_clks[i]) begin
-	 seqr.clk_seqrs[i] = gen_clks[i].seqr;
-	 seqr.rst_ana_export.connect(gen_clks[i].seqr.rst_ana_export);
+	     seqr.clk_seqrs[i] = gen_clks[i].seqr;
+	     seqr.rst_ana_export.connect(gen_clks[i].seqr.rst_ana_export);
       end
    endfunction
    
