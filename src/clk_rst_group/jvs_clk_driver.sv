@@ -61,10 +61,13 @@ class jvs_root_clk_driver extends jvs_clk_driver_base#(jvs_root_clk_cfg);
 endclass // jvs_root_clk_driver
 
 `uvm_analysis_imp_decl(_clk_rst_driver)
+`uvm_analysis_imp_decl(_clk_change_div_driver)
 
 class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
    uvm_analysis_imp_clk_rst_driver#(jvs_clk_rst_trans, jvs_gen_clk_driver) rst_ana_imp;
+   uvm_analysis_imp_clk_change_div_driver#(jvs_clk_change_div, jvs_gen_clk_driver) change_div_ana_imp;
    uvm_tlm_fifo#(jvs_clk_rst_trans) rst_fifo;
+   uvm_tlm_fifo#(jvs_clk_change_div) change_div_fifo;
    virtual        jvs_gen_clk_if vif;
    `uvm_component_utils_begin(jvs_gen_clk_driver)
    `uvm_component_utils_end
@@ -72,7 +75,9 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
    function new(string name = "jvs_gen_clk_driver", uvm_component parent);
       super.new(name, parent);
       rst_fifo = new("rst_fifo", this);
+      change_div_fifo = new("change_div_fifo", this);
       rst_ana_imp = new("rst_ana_imp", this);
+      change_div_ana_imp = new("change_div_ana_imp", this);
    endfunction // new
 
    virtual function void build_phase(uvm_phase phase);
@@ -134,21 +139,36 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
       uvm_event begin_e;
       uvm_event rst_e;
       uvm_event end_e;
-      rst_fifo.peek(tr);
-      begin_e = tr.begin_event_pool.get(this.get_name());
-      end_e = tr.end_event_pool.get(this.get_name());
-      rst_e = tr.rst_event_pool.get(this.get_name());
+      forever begin
+         rst_fifo.peek(tr);
+         begin_e = tr.begin_event_pool.get(this.get_name());
+         end_e = tr.end_event_pool.get(this.get_name());
+         rst_e = tr.rst_event_pool.get(this.get_name());
+         
+         reset_begin();
+         begin_e.trigger();
+         tr.wait_begin();
+         reset();
+         rst_e.trigger();
+         tr.wait_rst();
+         reset_end();
+         end_e.trigger();
+         
+         rst_fifo.get(tr);
+      end
+   endtask // reset_process
 
-      reset_begin();
-      begin_e.trigger();
-      tr.wait_begin();
-      reset();
-      rst_e.trigger();
-      tr.wait_rst();
-      reset_end();
-      end_e.trigger();
-
-      rst_fifo.get(tr);
+   local task change_div_process();
+      jvs_clk_change_div change_div;
+      uvm_event end_e;
+      forever begin
+         change_div_fifo.peek(change_div);
+         end_e = change_div.end_event_pool.get(this.get_name());
+         @(negedge vif.clock);
+         this.cfg.div_ratio = change_div.div_ratio;
+         end_e.trigger();
+         change_div_fifo.get(change_div);
+      end
    endtask // reset_process
 
    virtual task run_phase(uvm_phase phase);
@@ -159,11 +179,12 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
          @vif.clk_driver;
       end
       fork
-         drive_clk();
-      join_none
-      forever begin
          reset_process();
-      end
+      join_none
+      fork
+         change_div_process();
+      join_none
+      drive_clk();
    endtask // run_phase
 
    virtual function void write_clk_rst_driver (jvs_clk_rst_trans tr);
@@ -177,5 +198,18 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
          end_e.trigger();
       end
    endfunction
+
+   virtual function void write_clk_change_div_driver (jvs_clk_change_div tr);
+      if (uvm_is_match(tr.pattern, {cfg.parent.get_name(), ".", cfg.get_name()})) begin
+         if (!change_div_fifo.try_put(tr)) begin
+            `uvm_fatal(this.get_name(), "change div occurs while previous change div in processing!");
+         end
+      end
+      else begin
+         uvm_event end_e =  tr.end_event_pool.get(this.get_name());
+         end_e.trigger();
+      end
+   endfunction
+
 endclass  
 `endif

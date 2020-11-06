@@ -3,11 +3,11 @@
 virtual class jvs_clk_agent_base#(type CFG_CLASS = jvs_clk_cfg_base) extends uvm_agent;
    jvs_clk_driver_base#(CFG_CLASS) driver;
    `uvm_field_utils_begin(jvs_clk_agent_base#(CFG_CLASS))
-   `uvm_field_utils_end
+     `uvm_field_utils_end
 
-   function new(string name = "jvs_clk_agent_base", uvm_component parent);
-      super.new(name, parent);
-   endfunction
+       function new(string name = "jvs_clk_agent_base", uvm_component parent);
+          super.new(name, parent);
+       endfunction
 endclass // jvs_clk_agent_base
 
 class jvs_root_clk_agent extends jvs_clk_agent_base#(jvs_root_clk_cfg);
@@ -17,7 +17,7 @@ class jvs_root_clk_agent extends jvs_clk_agent_base#(jvs_root_clk_cfg);
    function new(string name = "jvs_root_clk_agent", uvm_component parent);
       super.new(name, parent);
    endfunction
-  
+   
    virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       driver = jvs_root_clk_driver::type_id::create("jvs_root_clk_driver", this);
@@ -32,7 +32,7 @@ class jvs_gen_clk_agent extends jvs_clk_agent_base#(jvs_gen_clk_cfg);
    function new(string name = "jvs_gen_clk_agent", uvm_component parent);
       super.new(name, parent);
    endfunction
-  
+   
    virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       seqr = jvs_clk_vir_seqr::type_id::create("jvs_clk_vir_seqr", this);
@@ -44,6 +44,7 @@ class jvs_gen_clk_agent extends jvs_clk_agent_base#(jvs_gen_clk_cfg);
       super.connect_phase(phase);
       $cast(_driver, driver);
       seqr.rst_ana_export.connect(_driver.rst_ana_imp);
+      seqr.change_div_ana_export.connect(_driver.change_div_ana_imp);
    endfunction
 endclass // jvs_gen_clk_agent
 
@@ -94,6 +95,7 @@ class jvs_clk_group_agent extends uvm_agent;
       foreach(gen_clks[i]) begin
 	     seqr.clk_seqrs[i] = gen_clks[i].seqr;
 	     seqr.rst_ana_export.connect(gen_clks[i].seqr.rst_ana_export);
+	     seqr.change_div_ana_export.connect(gen_clks[i].seqr.change_div_ana_export);
       end
    endfunction
    

@@ -282,54 +282,23 @@ endclass // jvs_root_clk_cfg
       endfunction
    endclass // jvs_gen_clk_trans
 
-   class jvs_clk_rst_trans extends uvm_sequence_item;
-      uvm_event_pool rst_event_pool;
-      uvm_event_pool begin_event_pool;
+
+   virtual class jvs_clk_cmd extends uvm_sequence_item;
       uvm_event_pool end_event_pool;
       string pattern;
-      
-      `uvm_object_utils_begin(jvs_clk_rst_trans)
-         `uvm_field_object(rst_event_pool, UVM_ALL_ON)
-         `uvm_field_object(begin_event_pool, UVM_ALL_ON)
+      `uvm_field_utils_begin(jvs_clk_cmd)
          `uvm_field_object(end_event_pool, UVM_ALL_ON)
          `uvm_field_string(pattern, UVM_ALL_ON)
-      `uvm_object_utils_end
+      `uvm_field_utils_end
       
-      function new(string name = "jvs_clk_rst_trans");
+      function new(string name = "jvs_clk_cmd");
          super.new(name);
-         rst_event_pool = new();
-         begin_event_pool = new();
          end_event_pool = new();
       endfunction
-
-      task wait_rst();
-         wait_event_pool(this.rst_event_pool);
-      endtask
-
-      task wait_begin();
-         wait_event_pool(this.begin_event_pool);
-      endtask
 
       task wait_end();
          wait_event_pool(this.end_event_pool);
       endtask
-
-      /* -----\/----- EXCLUDED -----\/-----
-       function void reset_event_status();
-       reset_event_pool_status(this.rst_event_pool);
-       reset_event_pool_status(this.begin_event_pool);
-       reset_event_pool_status(this.end_event_pool);
-   endfunction // reset_event_status
-
-       protected function reset_event_pool_status(uvm_event_pool event_pool);
-       string key;
-       while(event_pool.next(key)) begin
-       uvm_event e = event_pool.get(key);
-       e.reset();
-       event_pool.delete(key);
-      end
-   endfunction
-       -----/\----- EXCLUDED -----/\----- */
 
       protected task wait_event_pool(uvm_event_pool event_pool);
          string key;
@@ -344,4 +313,41 @@ endclass // jvs_root_clk_cfg
       endtask
 
    endclass
+   class jvs_clk_rst_trans extends jvs_clk_cmd;
+      uvm_event_pool rst_event_pool;
+      uvm_event_pool begin_event_pool;
+      
+      `uvm_object_utils_begin(jvs_clk_rst_trans)
+         `uvm_field_object(rst_event_pool, UVM_ALL_ON)
+         `uvm_field_object(begin_event_pool, UVM_ALL_ON)
+      `uvm_object_utils_end
+      
+      function new(string name = "jvs_clk_rst_trans");
+         super.new(name);
+         rst_event_pool = new();
+         begin_event_pool = new();
+      endfunction
+
+      task wait_rst();
+         wait_event_pool(this.rst_event_pool);
+      endtask
+
+      task wait_begin();
+         wait_event_pool(this.begin_event_pool);
+      endtask
+
+   endclass
+
+   class jvs_clk_change_div extends jvs_clk_cmd;
+      int  div_ratio;
+      `uvm_object_utils_begin(jvs_clk_change_div)
+         `uvm_field_int(div_ratio, UVM_ALL_ON)
+      `uvm_object_utils_end
+      
+      function new(string name = "jvs_clk_change_div");
+         super.new(name);
+      endfunction
+
+   endclass
+
 `endif
