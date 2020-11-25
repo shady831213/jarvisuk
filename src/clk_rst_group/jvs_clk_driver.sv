@@ -94,7 +94,7 @@ class jvs_gen_clk_driver extends jvs_clk_driver_base#(jvs_gen_clk_cfg);
       forever begin
          @vif.clk_driver;
          if(cycle_cnt == cfg.div_ratio - 1) begin
-            vif.clk_driver.clock <= ~vif.clk_driver.clock;
+            vif.clock <= ~vif.clock;
             cycle_cnt = 0;
          end
          else begin
