@@ -9,32 +9,47 @@ function string get_wave_name(); \
    end \
    else begin \
       wave_name = "test"; \
-      return wave_name; \
    end \
+   return wave_name; \
 endfunction \
 initial begin \
  `ifdef DUMP_FSDB \
-  `ifndef GATE \
-   $fsdbDumpfile($psprintf("%s.fsdb", get_wave_name())); \
+  `ifndef GATE_SIM \
+    $fsdbDumpfile($psprintf("%s.fsdb", get_wave_name())); \
   `else \
    $fsdbDumpfile($psprintf("%s_gate.fsdb", get_wave_name())); \
   `endif \
-   $fsdbDumpvars("+all"); \
- `ifdef DUMP_MEM \
-   $fsdbDumpDMA; \
- `endif \
- `ifdef DUMP_SVA \
-   $fsdbDumpSVA; \
- `endif \
+   $fsdbDumpvars(0, HIER, "+all"); \
+  `ifdef DUMP_MEM \
+    $fsdbDumpMDA; \
+  `endif \
+  `ifdef DUMP_SVA \
+    $fsdbDumpSVA; \
+  `endif \
    $fsdbDumpon; \
  `elsif DUMP_VPD \
-  `ifndef GATE \
-   $vcdplusfile($psprintf("%s.vpd", get_wave_name())); \
+  `ifndef GATE_SIM \
+    $vcdplusfile($psprintf("%s.vpd", get_wave_name())); \
   `else \
    $vcdplusfile($psprintf("%s_gate.vpd", get_wave_name())); \
   `endif \
    $vcdpluson(0, HIER); \
+ `elsif DUMP_VCD \
+  `ifndef GATE_SIM \
+    $dumpfile("test.vcd"); //cadence does not support string var\
+  `else \
+    $dumpfile("test_gate.vcd"); \
+  `endif \
+   $dumpvars(0, HIER); \
+ `elsif DUMP_TRN \
+  `ifndef GATE_SIM \
+    $recordfile($psprintf("%s", get_wave_name())); \
+  `else \
+    $recordfile($psprintf("%s_gate", get_wave_name())); \
+  `endif \
+   $recordvars(0, HIER); \
  `endif \
-end   
+end
+
  
 `endif

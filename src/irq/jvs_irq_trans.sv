@@ -2,14 +2,6 @@
  `define __JVS_IRQ_TRANS_SV__
 typedef jvs_common_attr jvs_irq_trans_attr;
 
-virtual class jvs_irq_result_trans_data extends uvm_object;
-   `uvm_field_utils_begin(jvs_irq_result_trans_data)
-   `uvm_field_utils_end
-   function new (string name = "jvs_irq_result_trans_data");
-      super.new(name);
-   endfunction
-endclass // jvs_irq_result_trans_data
-
 /*
  irq_vecotr[`JVS_MAX_IRQ_VECTOR_WIDTH-1:`JVS_MAX_IRQ_VECTOR_WIDTH-2]
  00: int_irq
@@ -105,9 +97,9 @@ class jvs_irq_trans extends jvs_irq_trans_base;
 endclass // jvs_irq_trans
 
 class jvs_irq_result_trans extends jvs_irq_trans_base;
-   jvs_irq_result_trans_data data;
+   jvs_irq_trans_attr attr;
    `uvm_object_utils_begin(jvs_irq_result_trans)
-     `uvm_field_object(data, UVM_ALL_ON)
+     `uvm_field_object(attr, UVM_ALL_ON)
    `uvm_object_utils_end
 
    function new(string name = "jvs_irq_result_trans");
