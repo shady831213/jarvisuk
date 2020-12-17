@@ -51,5 +51,29 @@ initial begin \
  `endif \
 end
 
+ `define JVS_FOR_FJ_BEGIN(ID, LOW, HIGH, STEP) \
+fork begin \
+   for(int _i = LOW; _i < HIGH; _i = _i + STEP) begin \
+      automatic int ID = _i; \
+      fork \
+         begin
+
+`define JVS_FOR_FJ_END \
+         end \
+      join_none \
+   end \
+   wait fork; \
+end \
+join
+
+   
+ `define JVS_FOREACH_FJ_BEGIN(VAR, ID) \
+fork begin \
+   foreach(VAR[_i]) begin \
+      automatic int ID = _i; \
+      fork \
+         begin
+
+ `define JVS_FOREACH_FJ_END `JVS_FOR_FJ_END
  
 `endif
