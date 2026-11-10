@@ -57,6 +57,7 @@ groups:
    jvs_memory
   tests:
    - jvs_memory_showcase:
+   - jvs_memory_allocator_free:
 
  jvs_irq:
   build:

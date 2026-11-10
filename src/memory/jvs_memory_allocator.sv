@@ -126,8 +126,6 @@ class jvs_memory_allocator extends jvs_memory_cfg;
 	 int alloc_block_index[$];
 	 int lower_block_index_in_free_q[$];
 	 int upper_block_index_in_free_q[$];
-	 int lower_block_index_in_alloc_q[$];
-	 int upper_block_index_in_alloc_q[$];
 	 jvs_memory_block lower_block, upper_block;
 	 jvs_memory_free_block free_block;
 
@@ -142,59 +140,21 @@ class jvs_memory_allocator extends jvs_memory_cfg;
 
 	 this.alloc_q.delete(alloc_block_index[0]);
 
-	 if (!this.free_q.size()) begin
-	    free_block = jvs_memory_free_block::type_id::create();
-	    free_block.configurate(acc_block.get_s_addr(), acc_block.get_size());
+	 free_block = jvs_memory_free_block::type_id::create();
+	 free_block.configurate(acc_block.get_s_addr(), acc_block.get_size());
+
+	 lower_block_index_in_free_q = this.free_q.find_first_index with (item.get_e_addr() == acc_block.get_s_addr() - 1);
+	 if (lower_block_index_in_free_q.size()) begin
+	    lower_block = this.free_q[lower_block_index_in_free_q[0]];
+	    free_block.configurate(lower_block.get_s_addr(), lower_block.get_size() + free_block.get_size());
+	    this.free_q.delete(lower_block_index_in_free_q[0]);
 	 end
-	 else begin
-	    lower_block_index_in_free_q = this.free_q.find_first_index with (item.get_e_addr() == acc_block.get_s_addr() - 1);
-	    if (!lower_block_index_in_free_q.size()) begin
-	       lower_block_index_in_alloc_q = this.alloc_q.find_first_index with (item.get_e_addr() == acc_block.get_s_addr() - 1);
-	       if (lower_block_index_in_alloc_q.size()) begin
-		  lower_block = this.alloc_q[lower_block_index_in_alloc_q[0]];
-	       end
-	    end
-	    else begin
-	       lower_block = this.free_q[lower_block_index_in_free_q[0]];
-	       this.free_q.delete(lower_block_index_in_free_q[0]);
-	    end
 
-	    upper_block_index_in_free_q = this.free_q.find_first_index with (item.get_s_addr() == acc_block.get_e_addr() + 1);
-	    if (!upper_block_index_in_free_q.size()) begin
-	       upper_block_index_in_alloc_q = this.alloc_q.find_first_index with (item.get_s_addr() == acc_block.get_e_addr() + 1);
-	       if (upper_block_index_in_alloc_q.size()) begin
-		  upper_block = this.alloc_q[upper_block_index_in_alloc_q[0]];
-	       end
-	    end
-	    else begin
-	       upper_block = this.free_q[upper_block_index_in_free_q[0]];
-	       this.free_q.delete(upper_block_index_in_free_q[0]);
-	    end
-
-	    if (!lower_block && !upper_block) begin
-	       acc_block.print();
-	       `uvm_fatal(this.get_name(), "free failed! can't find continuous block lower or upper block!");
-	       mutex.put();
-	       return;
-	    end
-
-	    free_block = jvs_memory_free_block::type_id::create();
-	    if (lower_block) begin
-	       jvs_memory_free_block lower_free_block;
-	       if ($cast(lower_free_block, lower_block)) begin
-		  free_block.configurate(lower_block.get_s_addr(), lower_block.get_size() + acc_block.get_size());
-	       end
-	       else begin
-		  free_block.configurate(lower_block.get_s_addr(), acc_block.get_size());		  
-	       end
-	    end
-
-	    if (upper_block) begin
-	       jvs_memory_free_block upper_free_block;
-	       if ($cast(upper_free_block, upper_block)) begin
-		  free_block.configurate(free_block.get_s_addr(), free_block.get_size() + upper_block.get_size());
-	       end
-	    end
+	 upper_block_index_in_free_q = this.free_q.find_first_index with (item.get_s_addr() == acc_block.get_e_addr() + 1);
+	 if (upper_block_index_in_free_q.size()) begin
+	    upper_block = this.free_q[upper_block_index_in_free_q[0]];
+	    free_block.configurate(free_block.get_s_addr(), free_block.get_size() + upper_block.get_size());
+	    this.free_q.delete(upper_block_index_in_free_q[0]);
 	 end
 	 this.free_q.push_back(free_block);
 	 delete(acc_block);

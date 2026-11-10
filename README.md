@@ -31,6 +31,17 @@ source jarvism_cfg/jarvism_setup.sh
 jarvism run_test jvs_memory jvs_memory_showcase -seed 1
 ```
 
+The allocator reclamation regression checks live-neighbour isolation, heap-edge
+releases, adjacent free-block coalescing and repeated whole-heap reuse:
+
+```sh
+jarvism run_test jvs_memory jvs_memory_allocator_free -seed 1
+```
+
+It uses the real memory model and public allocation API. A successful run prints
+`JVS_ALLOCATOR_FREE_PASS case=0` through `case=3` with no UVM errors or fatals.
+`+JVS_FREE_CASE=N` selects one scenario when invoking the simulator directly.
+
 # interrupt
 + support pin interrupt
 + support msi irq
