@@ -1,12 +1,11 @@
 `ifndef __JVS_IRQ_ENV_SV__
  `define __JVS_IRQ_ENV_SV__
-class jvs_irq_env extends uvm_env;
+class jvs_irq_env #(int PIN_COUNT = `JVS_MAX_INT_PIN_NUM) extends uvm_env;
    jvs_irq_vir_sequencer jvs_irq_seqr;
-   jvs_int_agent         jvs_int_ag;
+   jvs_int_agent #(PIN_COUNT) jvs_int_ag;
    jvs_msi_monitor       jvs_msi_mon;
 
-   `uvm_component_utils_begin(jvs_irq_env)
-   `uvm_component_utils_end
+   `JVS_PIN_COMPONENT_UTILS(jvs_irq_env)
 
    function new(string name = "jvs_irq_env", uvm_component parent = null);
       super.new(name, parent);
@@ -16,7 +15,7 @@ class jvs_irq_env extends uvm_env;
       super.build_phase(phase);
       uvm_config_db#(uvm_object_wrapper)::set(this, "jvs_irq_seqr.run_phase", "default_sequence", jvs_irq_vir_seq::type_id::get());
       jvs_irq_seqr = jvs_irq_vir_sequencer::type_id::create("jvs_irq_seqr", this);
-      jvs_int_ag = jvs_int_agent::type_id::create("jvs_int_agent", this);
+      jvs_int_ag = jvs_int_agent#(PIN_COUNT)::type_id::create("jvs_int_agent", this);
       if (!uvm_config_db#(jvs_msi_monitor)::get(this, "", "jvs_msi_monitor", jvs_msi_mon)) begin
 	 `uvm_info(this.get_name, "no msi support!", UVM_LOW);
       end

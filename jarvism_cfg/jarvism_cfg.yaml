@@ -64,6 +64,7 @@ groups:
    jvs_irq
   tests:
    - jvs_int_simple_test:
+   - jvs_irq_width_test:
    - jvs_msi_irq_test:
    - jvs_soft_irq_test:
 

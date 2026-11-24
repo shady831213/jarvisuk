@@ -13,27 +13,30 @@ class jvs_int_drv_trans extends jvs_irq_trans_base;
    endfunction	
 endclass // jvs_int_drv_trans
 
-class jvs_int_driver extends uvm_driver#(jvs_int_drv_trans);
-   `uvm_component_utils(jvs_int_driver)
+class jvs_int_driver #(int PIN_COUNT = `JVS_MAX_INT_PIN_NUM) extends uvm_driver#(jvs_int_drv_trans);
+   `JVS_PIN_COMPONENT_UTILS(jvs_int_driver)
 
-   virtual jvs_int_if vif;
-   int 	   int_set_cnt[bit[`JVS_MAX_INT_PIN_NUM - 1 : 0]];
+   typedef virtual jvs_int_if #(PIN_COUNT) vif_t;
+   vif_t vif;
+   int unsigned int_set_cnt[PIN_COUNT];
    function new(string name = "jvs_int_driver", uvm_component parent);
       super.new(name, parent);
    endfunction // new
 
    virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
-      if (!uvm_config_db#(virtual jvs_int_if)::get(this, "", "jvs_int_if", vif)) begin
+      if (!uvm_config_db#(vif_t)::get(this, "", "jvs_int_if", vif)) begin
 	 `uvm_fatal(get_full_name(), "Can't get the interrupt interface!");
       end
    endfunction // build_phase
 
    virtual task main_phase(uvm_phase phase);
-      vif.interrupt <= {`JVS_MAX_INT_PIN_NUM{1'b0}};
+      vif.interrupt <= '0;
 
       forever begin
 	 seq_item_port.get_next_item(req);
+	 if (req.irq_vector >= PIN_COUNT)
+	    `uvm_fatal("JVS_IRQ_PIN", $sformatf("Pin %0d outside %0d-pin interface", req.irq_vector, PIN_COUNT))
 	 if (req.set) begin
 	    int_set_cnt[req.irq_vector] ++ ;
 	    vif.interrupt[req.irq_vector] <= 1'b1;

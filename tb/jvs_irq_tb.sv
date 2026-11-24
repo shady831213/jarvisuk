@@ -28,8 +28,19 @@ module jvs_irq_tb();
    jvs_int_if int_if();
    assign int_if.clk = clk;
 
+   if (`JVS_MAX_INT_PIN_NUM >= 4) begin : width_test
+      jvs_int_if #(1) single();
+      jvs_int_if #(4) multi();
+      assign single.clk = clk;
+      assign multi.clk = clk;
+      initial begin
+         uvm_config_db#(virtual jvs_int_if #(1))::set(null, "uvm_test_top.single.jvs_int_agent", "jvs_int_if", single);
+         uvm_config_db#(virtual jvs_int_if #(4))::set(null, "uvm_test_top.multi.jvs_int_agent", "jvs_int_if", multi);
+      end
+   end
+
    initial begin
-      uvm_config_db#(virtual jvs_int_if)::set(null, "uvm_test_top.*.jvs_int_agent", "jvs_int_if", int_if);
+      uvm_config_db#(virtual jvs_int_if)::set(null, "uvm_test_top.jvs_irq_env.jvs_int_agent", "jvs_int_if", int_if);
       run_test();
    end
 

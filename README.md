@@ -49,6 +49,13 @@ It uses the real memory model and public allocation API. A successful run prints
 + support shared irq vector
 + support irq vector redirection
 
+Use `jvs_int_if #(N)` with `jvs_irq_env #(N)` and pass the interface
+through `uvm_config_db#(virtual jvs_int_if #(N))`. Pin numbers are local
+to that instance, in the range 0 through N−1. Instances with different
+widths can share a simulation. The default and maximum width are both
+`JVS_MAX_INT_PIN_NUM` (1024 unless overridden at compile time).
+The default specialization retains the original UVM factory name.
+
 ## test
 pin interrupt
 ```

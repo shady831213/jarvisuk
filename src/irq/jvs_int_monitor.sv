@@ -1,8 +1,9 @@
 `ifndef __JVS_INT_MONITOR_SV__
  `define __JVS_INT_MONITOR_SV__
-class jvs_int_monitor extends uvm_monitor;
-   `uvm_component_utils(jvs_int_monitor)
-   virtual jvs_int_if vif;
+class jvs_int_monitor #(int PIN_COUNT = `JVS_MAX_INT_PIN_NUM) extends uvm_monitor;
+   `JVS_PIN_COMPONENT_UTILS(jvs_int_monitor)
+   typedef virtual jvs_int_if #(PIN_COUNT) vif_t;
+   vif_t vif;
    uvm_analysis_port #(jvs_irq_trans) ap;
    function new(string name = "jvs_int_monitor", uvm_component parent);
       super.new(name, parent);
@@ -11,7 +12,7 @@ class jvs_int_monitor extends uvm_monitor;
    virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       ap = new("ap", this);
-      if (!uvm_config_db#(virtual jvs_int_if)::get(this, "", "jvs_int_if", vif)) begin
+      if (!uvm_config_db#(vif_t)::get(this, "", "jvs_int_if", vif)) begin
 	 `uvm_fatal(get_full_name(), "Can't get the interrupt interface!");
       end
    endfunction // build_phase
@@ -32,7 +33,7 @@ class jvs_int_monitor extends uvm_monitor;
       end
    endtask // main_phase
 
-   local function bit[`JVS_MAX_IRQ_VECTOR_WIDTH-1:0] get_vector(bit[`JVS_MAX_INT_PIN_NUM - 1 : 0] interrupt);
+   local function bit[`JVS_MAX_IRQ_VECTOR_WIDTH-1:0] get_vector(bit[PIN_COUNT-1:0] interrupt);
       foreach(interrupt[i]) begin
 	 if (interrupt[i]) begin
 	    return i;

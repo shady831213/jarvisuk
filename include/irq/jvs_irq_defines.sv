@@ -4,6 +4,17 @@
   `define JVS_MAX_INT_PIN_NUM 1024
  `endif
 
+// Keep the legacy factory name for the default specialization. Other widths
+// register by type, as with uvm_component_param_utils.
+`define JVS_PIN_COMPONENT_UTILS(T) \
+   localparam string type_name = PIN_COUNT == `JVS_MAX_INT_PIN_NUM ? `"T`" : "<unknown>"; \
+   typedef uvm_component_registry #(T #(PIN_COUNT), type_name) type_id; \
+   static function type_id get_type(); return type_id::get(); endfunction \
+   virtual function uvm_object_wrapper get_object_type(); return type_id::get(); endfunction \
+   virtual function string get_type_name(); \
+      return PIN_COUNT == `JVS_MAX_INT_PIN_NUM ? `"T`" : $sformatf("%s#(%0d)", `"T`", PIN_COUNT); \
+   endfunction
+
  `ifndef JVS_MAX_IRQ_VECTOR_WIDTH
   `define JVS_MAX_IRQ_VECTOR_WIDTH 64
  `endif
